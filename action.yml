@@ -2,19 +2,22 @@ name: Mule Action
 description: Action to test and deploy Mule Apps
 
 inputs:
-  mvnParams:
-    description: Variables passed to Maven with -D flag
+  testParams:
+    description: Parameters for Maven test goal (must include all -D directives)
     required: true
-  MULE_USERNAME:
+  deployParams:
+    description: Parameters for Maven deploy goal (must include all -D directives)
+    required: true
+  muleUsername:
     description: Username for deploying
     required: true
-  MULE_PASSWORD:
+  mulePassword:
     description: Password for deploying
     required: true
-  MULE_REPO_USERNAME:
+  nexusUsername:
     description: Username for Nexus repository
     required: true
-  MULE_REPO_PASSWORD:
+  nexusPassword:
     description: Password for Nexus repository
     required: true
     
@@ -45,23 +48,23 @@ runs:
           [
             {
               "id": "anypoint-exchange-v2",
-              "username": "${{inputs.MULE_USERNAME}}",
-              "password": "${{inputs.MULE_PASSWORD}}"
+              "username": "${{inputs.muleUsername}}",
+              "password": "${{inputs.mulePassword}}"
             },
             {
               "id": "mulesoft-releases",
-              "username": "${{inputs.MULE_USERNAME}}",
-              "password": "${{inputs.MULE_PASSWORD}}"
+              "username": "${{inputs.muleUsername}}",
+              "password": "${{inputs.mulePassword}}"
             },
             {
               "id": "MuleRepository",
-              "username": "${{inputs.MULE_REPO_USERNAME}}",
-              "password": "${{inputs.MULE_REPO_PASSWORD}}"
+              "username": "${{inputs.nexusUsername}}",
+              "password": "${{inputs.nexusPassword}}"
             },
             {
               "id": "Repository",
-              "username": "${{inputs.MULE_USERNAME}}",
-              "password": "${{inputs.MULE_PASSWORD}}"
+              "username": "${{inputs.muleUsername}}",
+              "password": "${{inputs.mulePassword}}"
             }
           ]
     - name: Set up JDK 8
@@ -71,12 +74,16 @@ runs:
         distribution: 'adopt'
         
     # test, package y deploy a exchange
+    
+    - name: Test with Maven. Assumes coverage values configured in pom.xml
+      run: mvn clean test ${{ inputs.testParams }}
+      shell: bash
+      
+    - name: Package with Maven skipping tests
+      run: mvn clean package -DskipTests
+      shell: bash
 
-    #- name: Deploy with Maven
-    #  run: mvn clean deploy ${{ inputs.mvnParams }}
-    #  shell: bash
-    - name: Download file
-      uses: DownloadSecureFile@1
-      displayName: 'Download settings-mule.xml'
-      inputs:
-        secureFile: 'settings-mule.xml'
+    - name: Deploy with Maven
+      run: mvn clean deploy -DskipTests -DmuleDeploy ${{ inputs.deployParams }}
+      shell: bash
+
