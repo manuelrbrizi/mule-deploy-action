@@ -76,7 +76,7 @@ runs:
     # test, package y deploy a exchange
     
     - name: Test with Maven. Assumes coverage values configured in pom.xml
-      run: mvn clean test ${{ inputs.testParams }}
+      run: mvn clean test -X ${{ inputs.testParams }}
       shell: bash
       
     - name: Package with Maven skipping tests
