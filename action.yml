@@ -73,21 +73,17 @@ runs:
         java-version: '8'
         distribution: 'adopt'
         
-    - name: PRINT STUFF
-      run: echo ${{ inputs.muleUsername }} ${{ inputs.mulePassword }}
-      shell: bash
-        
     # test, package y deploy a exchange
     
     - name: Test with Maven. Assumes coverage values configured in pom.xml
-      run: mvn clean test -X ${{ inputs.testParams }}
+      run: mvn clean test -e -s .m2/settings.xml ${{ inputs.testParams }}
       shell: bash
       
     - name: Package with Maven skipping tests
-      run: mvn clean package -DskipTests
+      run: mvn clean package -e -s .m2/settings.xml -DskipTests
       shell: bash
 
     - name: Deploy with Maven
-      run: mvn clean deploy -DskipTests -DmuleDeploy ${{ inputs.deployParams }}
+      run: mvn clean deploy -e -s .m2/settings.xml -DskipTests -DmuleDeploy ${{ inputs.deployParams }}
       shell: bash
 
