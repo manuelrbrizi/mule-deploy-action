@@ -20,6 +20,12 @@ inputs:
   nexusPassword:
     description: Password for Nexus repository
     required: true
+  deployToExchange:
+    description: Deploy to Exchange? (boolean)
+    required: true
+  projectName:
+    description: Name of the final JAR file (without jar extension)
+    required: true
     
 runs:
   using: "composite"
@@ -80,10 +86,16 @@ runs:
       shell: bash
       
     - name: Package with Maven skipping tests
+      if: ${{ inputs.deployToExchange }}
       run: mvn clean package -e -s .m2/settings.xml -DskipTests
       shell: bash
+      
+    - name: Deploy to Exchange
+      if: ${{ inputs.deployToExchange }}
+      run: mvn clean deploy -e -s .m2/settings.xml -DskipTests -Dmule.artifact=target/${{ inputs.projectName }}.jar
+      shell: bash
 
-    - name: Deploy with Maven
+    - name: Deploy to CloudHub
       run: mvn clean deploy -e -s .m2/settings.xml -DskipTests -DmuleDeploy ${{ inputs.deployParams }}
       shell: bash
 
