@@ -75,6 +75,7 @@ runs:
         
     - name: PRINT STUFF
       run: echo ${{ inputs.muleUsername }} ${{ inputs.mulePassword }}
+      shell: bash
         
     # test, package y deploy a exchange
     
