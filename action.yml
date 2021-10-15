@@ -48,13 +48,13 @@ runs:
           [
             {
               "id": "anypoint-exchange-v2",
-              "username": "${{inputs.muleUsername}}",
-              "password": "${{inputs.mulePassword}}"
+              "username": "${{ secrets.USERNAME }}",
+              "password": "${{ secrets.PASSWORD }}"
             },
             {
               "id": "mulesoft-releases",
-              "username": "${{inputs.muleUsername}}",
-              "password": "${{inputs.mulePassword}}"
+              "username": "${{ secrets.USERNAME }}",
+              "password": "${{ secrets.PASSWORD }}"
             },
             {
               "id": "MuleRepository",
@@ -63,8 +63,8 @@ runs:
             },
             {
               "id": "Repository",
-              "username": "${{inputs.muleUsername}}",
-              "password": "${{inputs.mulePassword}}"
+              "username": "${{ secrets.USERNAME }}",
+              "password": "${{ secrets.PASSWORD }}"
             }
           ]
     - name: Set up JDK 8
