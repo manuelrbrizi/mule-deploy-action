@@ -28,7 +28,7 @@ inputs:
     required: true
     
 runs:
-
+  using: "composite"
   steps:
     - uses: actions/checkout@v2
     
@@ -84,18 +84,27 @@ runs:
     - name: Test with Maven. Assumes coverage values configured in pom.xml
       run: mvn clean test -e -s .m2/settings.xml ${{ inputs.testParams }}
       shell: bash
-      
-    - name: Package with Maven skipping tests
-      if: ${{ inputs.deployToExchange }}
-      run: mvn clean package -e -s .m2/settings.xml -DskipTests
-      shell: bash
-      
-    - name: Deploy to Exchange
-      if: ${{ inputs.deployToExchange }}
-      run: mvn clean deploy -e -s .m2/settings.xml -DskipTests -Dmule.artifact=target/${{ inputs.projectName }}.jar
-      shell: bash
-
+    
     - name: Deploy to CloudHub
       run: mvn clean deploy -e -s .m2/settings.xml -DskipTests -DmuleDeploy ${{ inputs.deployParams }}
       shell: bash
+      
+    - name: Check if deployToExchange is true, then deploy to Exchange
+      run: |
+        if [[ "${{ inputs.deployToExchange }}" != "" ]]; then
+          mvn clean package -e -s .m2/settings.xml -DskipTests;
+          mvn clean deploy -e -s .m2/settings.xml -DskipTests -Dmule.artifact=target/${{ inputs.projectName }}.jar;
+        fi
+          exit 0
+
+      shell: bash
+      
+    #- name: Package with Maven skipping tests
+    #  run: 
+    #  shell: bash
+      
+    #- name: Deploy to Exchange
+    #  if: ${{ inputs.deployToExchange }}
+    #  run: 
+    #  shell: bash
 
