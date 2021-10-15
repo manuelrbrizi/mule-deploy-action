@@ -48,23 +48,23 @@ runs:
           [
             {
               "id": "anypoint-exchange-v2",
-              "username": "${{ secrets.USERNAME }}",
-              "password": "${{ secrets.PASSWORD }}"
+              "username": "${{ inputs.muleUsername }}",
+              "password": "${{ inputs.mulePassword }}"
             },
             {
               "id": "mulesoft-releases",
-              "username": "${{ secrets.USERNAME }}",
-              "password": "${{ secrets.PASSWORD }}"
+              "username": "${{ inputs.muleUsername }}",
+              "password": "${{ inputs.mulePassword }}"
             },
             {
               "id": "MuleRepository",
-              "username": "${{inputs.nexusUsername}}",
-              "password": "${{inputs.nexusPassword}}"
+              "username": "${{ inputs.nexusUsername }}",
+              "password": "${{ inputs.nexusPassword }}"
             },
             {
               "id": "Repository",
-              "username": "${{ secrets.USERNAME }}",
-              "password": "${{ secrets.PASSWORD }}"
+              "username": "${{ inputs.muleUsername }}",
+              "password": "${{ inputs.mulePassword }}"
             }
           ]
     - name: Set up JDK 8
@@ -72,6 +72,9 @@ runs:
       with:
         java-version: '8'
         distribution: 'adopt'
+        
+    - name: PRINT STUFF
+      run: echo ${{ inputs.muleUsername }} ${{ inputs.mulePassword }}
         
     # test, package y deploy a exchange
     
