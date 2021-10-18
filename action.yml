@@ -20,6 +20,18 @@ inputs:
   nexusPassword:
     description: Password for Nexus repository
     required: true
+  gitUsername:
+    description: Username for Git repository
+    required: true
+  gitToken:
+    description: Token for Git repository
+    required: true
+  developmentVersion:
+    description: Version with snapshot
+    required: true
+  releaseVersion:
+    description: Version without snapshot
+    required: true
   deployToExchange:
     description: Deploy to Exchange? (boolean)
     required: true
@@ -68,6 +80,11 @@ runs:
               "password": "${{ inputs.nexusPassword }}"
             },
             {
+              "id": "github",
+              "username": "${{ inputs.gitUsername }}",
+              "password": "${{ inputs.gitToken }}"
+            },
+            {
               "id": "Repository",
               "username": "${{ inputs.muleUsername }}",
               "password": "${{ inputs.mulePassword }}"
@@ -91,11 +108,10 @@ runs:
       
     - name: Check if deployToExchange is true, then deploy to Exchange
       run: |
-        if [[ "${{ inputs.deployToExchange }}" != "" ]]; then
-          mvn clean package -e -s .m2/settings.xml -DskipTests;
-          mvn clean deploy -e -s .m2/settings.xml -DskipTests -Dmule.artifact=target/${{ inputs.projectName }}.jar;
+        if [[ "${{ inputs.deployToExchange }}" = true ]]; then
+          mvn release:prepare release:perform -DreleaseVersion=${{ inputs.releaseVersion }} -DdevelopmentVersion=${{ inputs.developmentVersion }} -Dtag=${{ inputs.releaseVersion }} -Darguments=-DskipTests
+          mvn clean deploy -e -s .m2/settings.xml -DskipTests -Dmule.artifact=target/checkout/target/${{ inputs.projectName }}-${{ inputs.releaseVersion }}-jar-with-dependencies.jar;
         fi
-          exit 0
 
       shell: bash
       
