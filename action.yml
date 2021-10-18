@@ -96,6 +96,10 @@ runs:
         java-version: '8'
         distribution: 'adopt'
         
+    - name: Configure Git User
+      run: |
+        git config user.email "actions@github.com"
+        git config user.name "GitHub Actions"
     # test, package y deploy a exchange
     
     - name: Test with Maven. Assumes coverage values configured in pom.xml
